@@ -12,15 +12,15 @@ function index() {
       <div>
         <div className="flex justify-center items-center mb-[52px] mt-[30px]">
           <Image src={Spotify.src} width={50} height={50} />
-          <span className="mf-[15px] text-[25px] font-[600] ml-5 text-[#1DB954]">
+          <span className="mf-[15px] text-[25px] font-[600] ml-5 z-1 text-[#1DB954]">
             Spotify
           </span>
         </div>
         <div>
           <SearchBar />
-          <div className="group bg-main rounded-md mb-10 mt-4 p-2">
+          <div className="group bg-main rounded-md mb-10 mt-4 p-2 active:scale-90">
             <Link href={'/'}>
-              <h3 className="cursor-pointer  text-[25px] font-[600] text-center text-[#F0F8FF]">
+              <h3 className="cursor-pointer  text-[25px] font-[600] text-center text-[#F0F8FF] hover:text-third">
                 Dashboard
               </h3>
             </Link>
@@ -28,7 +28,7 @@ function index() {
 
           <Link
             href={'/albums'}
-            className="flex justify-center items-center pb-6 group ">
+            className="flex justify-center items-center pb-6 group active:scale-90">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="white"
@@ -44,7 +44,7 @@ function index() {
           </Link>
           <Link
             href={'/artists'}
-            className="flex justify-center pb-6 group items-center">
+            className="flex justify-center pb-6 group items-center active:scale-90">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="28"
@@ -60,7 +60,7 @@ function index() {
           </Link>
           <Link
             href={'/audios'}
-            className="flex justify-center pb-6 group items-center">
+            className="flex justify-center pb-6 group items-center active:scale-90">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="28"

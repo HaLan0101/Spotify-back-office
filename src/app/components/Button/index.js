@@ -15,7 +15,7 @@ const Button = ({color, onClick, children, type}) => {
 
   return (
     <button
-      className={`py-2 px-4 rounded focus:outline-none focus:shadow-outline ${getColorClass()}`}
+      className={`py-2 px-4 rounded focus:outline-none focus:shadow-outline active:scale-95 ${getColorClass()}`}
       onClick={onClick}
       type={type}>
       {children}

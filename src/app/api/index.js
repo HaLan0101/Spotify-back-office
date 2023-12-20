@@ -53,6 +53,14 @@ export const deleteAudio = async id => {
   return data;
 };
 
+export const deleteAudioAlbum = async id => {
+  const res = await fetch(`http://localhost:3000/api/audioFromAlbum/${id}`, {
+    method: 'DELETE',
+  });
+  const data = await res.json();
+  return data;
+};
+
 //Functions to get all
 
 export const getArtists = async () => {
@@ -74,8 +82,8 @@ export const getAlbums = async () => {
   return data;
 };
 
-export const getAudios = async () => {
-  const response = await fetch('http://localhost:3000/api/audios');
+export const getAudios = async page => {
+  const response = await fetch(`http://localhost:3000/api/audios?page=${page}`);
   const data = await response.json();
   return data;
 };
@@ -110,6 +118,18 @@ export const updateAudio = async (id, data) => {
   return res;
 };
 
+export const updateAudioAlbum = async (id, data) => {
+  const response = await fetch(
+    `http://localhost:3000/api/audioFromAlbum/${id}`,
+    {
+      method: 'PUT',
+      body: data,
+    },
+  );
+  const res = await response.json();
+  return res;
+};
+
 //  Function create
 
 export const createArtist = async data => {
@@ -137,6 +157,36 @@ export const createAudio = async formData => {
     body: formData,
     cache: 'no-cache',
   });
+  const data = await response.json();
+  return data;
+};
+
+export const createAudioAlbum = async formData => {
+  const response = await fetch('http://localhost:3000/api/audioFromAlbum', {
+    method: 'POST',
+    body: formData,
+    cache: 'no-cache',
+  });
+  const data = await response.json();
+  return data;
+};
+
+// Function count
+
+export const getListenCount = async () => {
+  const response = await fetch('http://localhost:3000/api/countListenTotal');
+  const data = await response.json();
+  return data;
+};
+
+export const getCountAlbums = async () => {
+  const response = await fetch('http://localhost:3000/api/countAlbum');
+  const data = await response.json();
+  return data;
+};
+
+export const getCountAudios = async () => {
+  const response = await fetch('http://localhost:3000/api/countAudio');
   const data = await response.json();
   return data;
 };

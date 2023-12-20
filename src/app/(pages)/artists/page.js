@@ -7,8 +7,10 @@ import ArtistBar from '@/app/components/ItemBar';
 import TitleButton from '@/app/components/TitleButton';
 import artistsbg from '@/../../public/icons/artistsbg.jpg';
 import Modal from '@/app/components/Modal';
+import Loader from '@/app/components/Loader';
 import {toast} from 'react-toastify';
 import {ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
   const router = useRouter();
@@ -17,16 +19,21 @@ export default function Page() {
   const [artistToUpdate, setArtistToUpdate] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const openModal = artist => {
-    setArtistToUpdate(artist.id);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setArtistToUpdate(null);
-    setIsModalOpen(false);
-  };
+  useEffect(() => {
+    setLoading(true);
+    getArtists()
+      .then(data => {
+        setArtists(data);
+      })
+      .catch(error => {
+        console.error('Error fetching artists:', error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const handleCreate = e => {
     e.preventDefault();
@@ -55,7 +62,7 @@ export default function Page() {
         })
         .catch(error => console.error('Error updating artist:', error));
     },
-    [setArtists, closeModal, name],
+    [setArtists, name],
   );
 
   const handleDeleteArtist = useCallback(
@@ -70,41 +77,48 @@ export default function Page() {
     [setArtists],
   );
 
-  useEffect(() => {
-    getArtists()
-      .then(data => {
-        setArtists(data);
-      })
-      .catch(error => {
-        console.error('Error fetching artists:', error);
-      });
-  }, []);
+  const openModal = artist => {
+    setArtistToUpdate(artist.id);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setArtistToUpdate(null);
+    setIsModalOpen(false);
+  };
+  if (loading) return <Loader />;
 
   return (
     <div className="w-full">
       <ToastContainer position="bottom-right" />
-      <div className="flex justify-center">
-        <img src={artistsbg.src} className="h-[300px]" />
-      </div>
-      <div className="mt-[30px]">
-        <TitleButton title="Artist" onClick={() => setOpenCreateModal(true)} />
-        <div className="flex text-[25px] text-main font-semibold pt-3 mx-[40px]">
-          <p className="pr-[33px]">Id</p>
-          <p>Name</p>
+      <div>
+        <div className="flex justify-center h-[300px]">
+          <img src={artistsbg.src} className="h-full " />
         </div>
-        <ul className="mt-4 mx-[20px]">
-          {artists &&
-            artists.map((artist, index) => (
-              <ArtistBar
-                key={index}
-                item={artist}
-                href={`/artists/${artist.id}`}
-                onDelete={() => handleDeleteArtist(artist.id)}
-                onUpdate={() => openModal(artist)}
-              />
-            ))}
-        </ul>
+        <div className="p-[30px]">
+          <TitleButton
+            title="Artist"
+            onClick={() => setOpenCreateModal(true)}
+          />
+          <div className="flex text-[25px] text-main font-semibold pt-3 mx-[40px]">
+            <p className="pr-[40px]">Id</p>
+            <p>Name</p>
+          </div>
+          <ul className="mt-4 mx-[20px]">
+            {artists &&
+              artists.map((artist, index) => (
+                <ArtistBar
+                  key={index}
+                  item={artist}
+                  href={`/artists/${artist.id}`}
+                  onDelete={() => handleDeleteArtist(artist.id)}
+                  onUpdate={() => openModal(artist)}
+                />
+              ))}
+          </ul>
+        </div>
       </div>
+
       {openCreateModal && (
         <Modal onClose={() => setOpenCreateModal(false)}>
           <form onSubmit={handleCreate} className="mt-4 flex justify-center">
@@ -118,7 +132,6 @@ export default function Page() {
           </form>
         </Modal>
       )}
-
       {isModalOpen && (
         <Modal onClose={closeModal}>
           <form

@@ -1,5 +1,5 @@
 'use client';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useMemo, useCallback} from 'react';
 import {
   deleteAlbum,
   getAlbums,
@@ -10,11 +10,13 @@ import {
 import Modal from '@/app/components/Modal';
 import AlbumBackground from '@/../../public/icons/albumBackground.jpg';
 import TitleButton from '@/app/components/TitleButton';
+import Loader from '@/app/components/Loader';
 import AlbumCard from '@/app/components/AlbumCard';
 import Link from 'next/link';
 import Button from '@/app/components/Button';
 import {toast} from 'react-toastify';
 import {ToastContainer} from 'react-toastify';
+import {types} from '../../../../public/typeList.js';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
@@ -26,56 +28,80 @@ export default function Page() {
   const [updateModal, setUpdateModal] = useState(false);
   const [selectedArtist, setSelectedArtist] = useState();
   const [selectedAlbum, setSelectedAlbum] = useState();
+  const [loading, setLoading] = useState(false);
+  const [selectedType, setSelectedType] = useState('');
 
-  useEffect(() => {
+  const albumsData = useMemo(() => {
+    setLoading(true);
     getAlbums()
       .then(data => {
         setAlbums(data);
       })
       .catch(error => {
         console.error('Error fetching artists:', error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     getArtists()
       .then(data => {
         setArtists(data);
       })
       .catch(error => {
         console.error('Error fetching artists:', error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
   const handleDelete = id => {
+    const isConfirmed = window.confirm(
+      'Are you sure you want to delete this album?',
+    );
+    if (!isConfirmed) {
+      return;
+    }
     deleteAlbum(id)
       .then(data => {
         setAlbums(data);
-        toast.success('Album deleted');
+        toast.success('Album deleted successfully');
       })
-      .catch(error => console.error('Error deleting artist:', error));
+      .catch(error => {
+        console.error('Error deleting album:', error);
+      });
   };
 
   const handleSubmit = e => {
+    setLoading(true);
     e.preventDefault();
     const formData = new FormData();
     formData.append('title', title);
     formData.append('imageFile', cover);
     formData.append('artistId', selectedArtist);
-    console.log(title, selectedArtist, cover);
-    createAlbum(e, formData)
+    formData.append('type', selectedType);
+    createAlbum(formData)
       .then(data => {
+        getAlbums().then(data => setAlbums(data));
         setModalOpen(false);
+        setCover(null);
         setTitle('');
         setSelectedArtist(null);
-        getAlbums().then(data => setAlbums(data));
       })
       .catch(error => {
         console.error('Error creating album:', error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   const handleUpdate = (e, id) => {
+    setLoading(true);
     e.preventDefault();
     const formData = new FormData();
     formData.append('title', title);
@@ -88,18 +114,23 @@ export default function Page() {
       })
       .catch(error => {
         console.error('Error creating album:', error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
-  const updateMod = album => {
+  const updateMod = useCallback(album => {
     setUpdateModal(true);
     setSelectedAlbum(album.id);
-  };
+    setSelectedType(album.type);
+  }, []);
 
-  const handleCoverChange = e => {
+  const handleCoverChange = useCallback(e => {
     const file = e.target.files[0];
     setCover(file);
-  };
+  }, []);
+  if (loading) return <Loader />;
   return (
     <div>
       <ToastContainer />
@@ -111,7 +142,7 @@ export default function Page() {
           />
         </div>
         <TitleButton title="album" onClick={() => setModalOpen(true)} />
-        <ul className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 w-full m-4">
+        <ul className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3  w-full m-4">
           {albums &&
             albums.map((album, index) => (
               <AlbumCard
@@ -151,6 +182,18 @@ export default function Page() {
                 className="hidden"
               />
             </label>
+            <select
+              value={selectedType}
+              onChange={e => setSelectedType(e.target.value)}
+              className="w-full px-4 py-2 rounded">
+              <option value="">Select album genre</option>
+              {types &&
+                types.map(type => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+            </select>
             <Button type="submit">Update</Button>
           </form>
         </Modal>
@@ -194,6 +237,18 @@ export default function Page() {
                   {artist.name}
                 </option>
               ))}
+            </select>
+            <select
+              value={selectedType}
+              onChange={e => setSelectedType(e.target.value)}
+              className="w-full px-4 py-2 rounded">
+              <option value="">Select Music Type</option>
+              {types &&
+                types.map(type => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
             </select>
             <Button type="submit">Create Album</Button>
           </form>
