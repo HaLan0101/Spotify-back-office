@@ -5,6 +5,7 @@ import {getArtist, deleteAlbum} from '@/app/api';
 import AlbumCard from '@/app/components/AlbumCard';
 import Loader from '@/app/components/Loader';
 import Background from '@/../../public/icons/background1.jpg';
+import Image from 'next/image';
 import {toast} from 'react-toastify';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -40,6 +41,10 @@ const ArtistPage = () => {
 
   const handleDeleteAlbumFromArtist = useCallback(
     albumId => {
+      const isConfirmed = window.confirm('Are you sure you want to delete?');
+      if (!isConfirmed) {
+        return;
+      }
       setLoading(true);
       deleteAlbum(albumId).then(() => {
         getArtist(id)
@@ -62,8 +67,10 @@ const ArtistPage = () => {
   return (
     <div className="">
       <ToastContainer />
-      <div className=" w-full h-[300px] overflow-hidden p-1">
-        <img src={Background.src} className="w-full h-full object-contain" />
+      <div
+        className=" w-full h-[300px] overflow-hidden p-1
+      relative">
+        <Image src={Background.src} fill objectFit="contain" alt="background" />
       </div>
       <h1 className="text-white text-[25px] capitalize mx-11 my-2">
         {artist.name}

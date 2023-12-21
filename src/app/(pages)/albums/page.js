@@ -13,11 +13,12 @@ import TitleButton from '@/app/components/TitleButton';
 import Loader from '@/app/components/Loader';
 import AlbumCard from '@/app/components/AlbumCard';
 import Link from 'next/link';
-import Button from '@/app/components/Button';
+import Image from 'next/image.js';
 import {toast} from 'react-toastify';
 import {ToastContainer} from 'react-toastify';
 import {types} from '../../../../public/typeList.js';
 import 'react-toastify/dist/ReactToastify.css';
+import FormAlbum from '@/app/components/FormAlbum';
 
 export default function Page() {
   const [title, setTitle] = useState('');
@@ -106,9 +107,11 @@ export default function Page() {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('imageFile', cover);
+    formData.append('type', selectedType);
     updateAlbum(id, formData)
       .then(data => {
         setUpdateModal(false);
+        setCover(null);
         getAlbums().then(data => setAlbums(data));
         toast.success('Album updated successfully');
       })
@@ -123,6 +126,7 @@ export default function Page() {
   const updateMod = useCallback(album => {
     setUpdateModal(true);
     setSelectedAlbum(album.id);
+    setTitle(album.title);
     setSelectedType(album.type);
   }, []);
 
@@ -136,9 +140,11 @@ export default function Page() {
       <ToastContainer />
       <div className="mx-5">
         <div className="w-full h-[300px] overflow-hidden">
-          <img
+          <Image
+            width={800}
+            height={300}
             src={AlbumBackground.src}
-            className="w-full h-full object-cover"
+            alt="albums"
           />
         </div>
         <TitleButton title="album" onClick={() => setModalOpen(true)} />
@@ -159,99 +165,38 @@ export default function Page() {
             setUpdateModal(false);
             setCover(null);
           }}>
-          <form
-            onSubmit={e => {
-              handleUpdate(e, selectedAlbum);
-            }}
-            className="flex flex-col items-center p-4 space-y-4">
-            <input
-              onChange={e => setTitle(e.target.value)}
-              type="text"
-              placeholder="Title"
-              value={selectedAlbum.name}
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded focus:outline-none focus:border-second"
-            />
-            <label className="flex items-center justify-center w-full p-4 bg-gray-100 border-2  rounded cursor-pointer">
-              <span className="text-base text-gray-600">
-                {cover ? cover.name : 'Upload Cover Image'}
-              </span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleCoverChange}
-                className="hidden"
-              />
-            </label>
-            <select
-              value={selectedType}
-              onChange={e => setSelectedType(e.target.value)}
-              className="w-full px-4 py-2 rounded">
-              <option value="">Select album genre</option>
-              {types &&
-                types.map(type => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-            </select>
-            <Button type="submit">Update</Button>
-          </form>
+          <FormAlbum
+            onSubmit={e => handleUpdate(e, selectedAlbum)}
+            isUpdate
+            title={title}
+            setTitle={setTitle}
+            cover={cover}
+            types={types}
+            handleCoverChange={handleCoverChange}
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
+            selectedArtist={selectedArtist}
+            setSelectedArtist={setSelectedArtist}
+          />
         </Modal>
       )}
-
       {modalOpen && (
         <Modal
           onClose={() => {
             setModalOpen(false);
             setCover(null);
           }}>
-          <form
-            onSubmit={e => {
-              handleSubmit(e);
-            }}
-            className="flex flex-col items-center p-4 space-y-4">
-            <input
-              onChange={e => setTitle(e.target.value)}
-              type="text"
-              placeholder="Title"
-              className="w-full px-4 py-2  rounded"
-            />
-            <label className="flex items-center justify-center w-full p-4 bg-gray-100  rounded cursor-pointer">
-              <span className="text-base text-gray-600">
-                {cover ? cover.name : 'Upload Cover Image'}
-              </span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleCoverChange}
-                className="hidden"
-              />
-            </label>
-            <select
-              value={selectedArtist}
-              onChange={e => setSelectedArtist(e.target.value)}
-              className="w-full px-4 py-2  rounded ">
-              <option value="">Select Artist</option>
-              {artists.map(artist => (
-                <option key={artist.id} value={artist.id}>
-                  {artist.name}
-                </option>
-              ))}
-            </select>
-            <select
-              value={selectedType}
-              onChange={e => setSelectedType(e.target.value)}
-              className="w-full px-4 py-2 rounded">
-              <option value="">Select Music Type</option>
-              {types &&
-                types.map(type => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-            </select>
-            <Button type="submit">Create Album</Button>
-          </form>
+          <FormAlbum
+            onSubmit={e => handleSubmit(e)}
+            title={title}
+            setTitle={setTitle}
+            cover={cover}
+            handleCoverChange={handleCoverChange}
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
+            selectedArtist={selectedArtist}
+            setSelectedArtist={setSelectedArtist}
+          />
         </Modal>
       )}
     </div>

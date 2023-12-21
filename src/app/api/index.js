@@ -1,8 +1,13 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 //Functions to get [id]
 
 export const getArtist = async id => {
   try {
-    const response = await fetch(`http://localhost:3000/api/artists/${id}/`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/artists/${id}/`,
+    );
     if (!response.ok) {
       throw new Error('Failed to fetch artist');
     }
@@ -16,7 +21,9 @@ export const getArtist = async id => {
 
 export const getAlbum = async id => {
   try {
-    const response = await fetch(`http://localhost:3000/api/albums/${id}/`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/albums/${id}/`,
+    );
     if (!response.ok) {
       throw new Error('Failed to fetch artist');
     }
@@ -30,7 +37,7 @@ export const getAlbum = async id => {
 //Functions to delete [id]
 
 export const deleteAlbum = async id => {
-  const res = await fetch(`http://localhost:3000/api/albums/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/albums/${id}`, {
     method: 'DELETE',
   });
   const data = await res.json();
@@ -38,7 +45,7 @@ export const deleteAlbum = async id => {
 };
 
 export const deleteArtist = async id => {
-  const res = await fetch(`http://localhost:3000/api/artists/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artists/${id}`, {
     method: 'DELETE',
   });
   const data = await res.json();
@@ -46,7 +53,7 @@ export const deleteArtist = async id => {
 };
 
 export const deleteAudio = async id => {
-  const res = await fetch(`http://localhost:3000/api/audios/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/audios/${id}`, {
     method: 'DELETE',
   });
   const data = await res.json();
@@ -54,9 +61,12 @@ export const deleteAudio = async id => {
 };
 
 export const deleteAudioAlbum = async id => {
-  const res = await fetch(`http://localhost:3000/api/audioFromAlbum/${id}`, {
-    method: 'DELETE',
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/audioFromAlbum/${id}`,
+    {
+      method: 'DELETE',
+    },
+  );
   const data = await res.json();
   return data;
 };
@@ -65,7 +75,7 @@ export const deleteAudioAlbum = async id => {
 
 export const getArtists = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/artists', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artists`, {
       cache: 'no-cache',
     });
     const data = await response.json();
@@ -77,13 +87,15 @@ export const getArtists = async () => {
 };
 
 export const getAlbums = async () => {
-  const response = await fetch('http://localhost:3000/api/albums');
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/albums`);
   const data = await response.json();
   return data;
 };
 
 export const getAudios = async page => {
-  const response = await fetch(`http://localhost:3000/api/audios?page=${page}`);
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/audios?page=${page}`,
+  );
   const data = await response.json();
   return data;
 };
@@ -91,36 +103,45 @@ export const getAudios = async page => {
 // Function update
 
 export const updateArtist = async (id, data) => {
-  const response = await fetch(`http://localhost:3000/api/artists/${id}`, {
-    method: 'PUT',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(data),
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/artists/${id}`,
+    {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data),
+    },
+  );
   const res = await response.json();
   return res;
 };
 
 export const updateAlbum = async (id, data) => {
-  const response = await fetch(`http://localhost:3000/api/albums/${id}`, {
-    method: 'PUT',
-    body: data,
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/albums/${id}`,
+    {
+      method: 'PUT',
+      body: data,
+    },
+  );
   const res = await response.json();
   return res;
 };
 
 export const updateAudio = async (id, data) => {
-  const response = await fetch(`http://localhost:3000/api/audios/${id}`, {
-    method: 'PUT',
-    body: data,
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/audios/${id}`,
+    {
+      method: 'PUT',
+      body: data,
+    },
+  );
   const res = await response.json();
   return res;
 };
 
 export const updateAudioAlbum = async (id, data) => {
   const response = await fetch(
-    `http://localhost:3000/api/audioFromAlbum/${id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/audioFromAlbum/${id}`,
     {
       method: 'PUT',
       body: data,
@@ -133,7 +154,7 @@ export const updateAudioAlbum = async (id, data) => {
 //  Function create
 
 export const createArtist = async data => {
-  const response = await fetch('http://localhost:3000/api/artist', {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artist`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(data),
@@ -143,7 +164,7 @@ export const createArtist = async data => {
 };
 
 export const createAlbum = async formData => {
-  const response = await fetch('http://localhost:3000/api/album', {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/album`, {
     method: 'POST',
     body: formData,
   });
@@ -152,7 +173,7 @@ export const createAlbum = async formData => {
 };
 
 export const createAudio = async formData => {
-  const response = await fetch('http://localhost:3000/api/audio', {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/audio`, {
     method: 'POST',
     body: formData,
     cache: 'no-cache',
@@ -162,11 +183,14 @@ export const createAudio = async formData => {
 };
 
 export const createAudioAlbum = async formData => {
-  const response = await fetch('http://localhost:3000/api/audioFromAlbum', {
-    method: 'POST',
-    body: formData,
-    cache: 'no-cache',
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/audioFromAlbum`,
+    {
+      method: 'POST',
+      body: formData,
+      cache: 'no-cache',
+    },
+  );
   const data = await response.json();
   return data;
 };
@@ -174,19 +198,29 @@ export const createAudioAlbum = async formData => {
 // Function count
 
 export const getListenCount = async () => {
-  const response = await fetch('http://localhost:3000/api/countListenTotal');
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/countListenTotal`,
+  );
   const data = await response.json();
   return data;
 };
 
 export const getCountAlbums = async () => {
-  const response = await fetch('http://localhost:3000/api/countAlbum');
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/countAlbum`);
   const data = await response.json();
   return data;
 };
 
 export const getCountAudios = async () => {
-  const response = await fetch('http://localhost:3000/api/countAudio');
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/countAudio`);
+  const data = await response.json();
+  return data;
+};
+
+export const getCountArtist = async () => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/countArtist`,
+  );
   const data = await response.json();
   return data;
 };

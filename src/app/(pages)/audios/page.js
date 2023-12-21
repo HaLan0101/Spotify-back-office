@@ -1,5 +1,5 @@
 'use client';
-import {useState, useEffect, useMemo, useCallback} from 'react';
+import {useState, useEffect} from 'react';
 import {
   getAudios,
   deleteAudio,
@@ -12,6 +12,8 @@ import songsbg from '@/../../public/icons/songsbg.jpg';
 import Modal from '@/app/components/Modal';
 import TitleButton from '@/app/components/TitleButton';
 import Button from '@/app/components/Button';
+import FormAudio from '@/app/components/FormAudio';
+import Image from 'next/image';
 import Loader from '@/app/components/Loader';
 import {toast} from 'react-toastify';
 import {ToastContainer} from 'react-toastify';
@@ -48,20 +50,19 @@ export default function Sounds() {
     fetchAudios(page);
   }, [page]);
 
-  const fetchAlbums = useMemo(
-    () => async () => {
-      setLoading(true);
-      try {
-        const data = await getAlbums();
+  useEffect(() => {
+    setLoading(true);
+    getAlbums()
+      .then(data => {
         setAlbums(data);
-      } catch (error) {
-        console.error('Error fetching albums:', error);
-      } finally {
+      })
+      .catch(error => {
+        console.error('Error fetching audios:', error);
+      })
+      .finally(() => {
         setLoading(false);
-      }
-    },
-    [],
-  );
+      });
+  }, []);
 
   const handleCreateAudio = e => {
     setLoading(true);
@@ -135,31 +136,28 @@ export default function Sounds() {
     }
   };
 
-  const handleLoadPlus = useCallback(
-    e => {
-      e.preventDefault();
-      setPage(prevPage => prevPage + 1);
-      fetchAudios(page + 1);
-    },
-    [fetchAudios, page],
-  );
-  const handleLoadMinus = useCallback(
-    e => {
-      e.preventDefault();
-      setPage(prevPage => prevPage - 1);
-      fetchAudios(page - 1);
-    },
-    [fetchAudios, page],
-  );
+  const handleLoadPlus = e => {
+    e.preventDefault();
+    setPage(page + 1);
+    fetchAudios(page);
+  };
+  const handleLoadMinus = e => {
+    e.preventDefault();
+    setPage(page - 1);
+    fetchAudios(page);
+  };
+
   if (loading) return <Loader />;
   return (
     <div className="w-full">
       <ToastContainer />
-      <div className="w-full h-[300px] overflow-hidden">
-        <img
+      <div className="w-full h-[300px] overflow-hidden relative">
+        <Image
           src={songsbg.src}
-          className="w-full h-full object-cover"
+          fill
           loading="lazy"
+          objectFit="cover"
+          alt="audios"
         />
       </div>
       <TitleButton title="Audios" onClick={() => setOpenCreateModal(true)} />
@@ -186,7 +184,7 @@ export default function Sounds() {
             />
           ))}
       </ul>
-      <div className="flex justify-between p-5 w-[30%] m-auto">
+      <div className="flex justify-between p-5 w-[25%] m-auto">
         {page != 0 && (
           <Button onClick={handleLoadMinus}>
             <p className="px-6">Back</p>
@@ -200,71 +198,30 @@ export default function Sounds() {
       </div>
       {openCreateModal && (
         <Modal onClose={() => setOpenCreateModal(false)}>
-          <form
-            onSubmit={e => {
-              handleCreateAudio(e);
-            }}
-            className="flex flex-col items-center p-4 space-y-4">
-            <input
-              type="text"
-              placeholder="Title"
-              onChange={e => setAudioTitle(e.target.value)}
-              className="w-full px-4 py-2 rounded"
-            />
-
-            <label className="flex items-center justify-center w-full p-4 bg-gray-100  rounded cursor-pointer">
-              <span className="text-base text-gray-600">
-                {audioFile ? audioFile.name : 'Upload audio file'}
-              </span>
-              <input
-                type="file"
-                accept="audio/*"
-                onChange={e => setAudioFile(e.target.files[0])}
-                className="hidden"
-              />
-            </label>
-            <select
-              value={selectedAlbum}
-              onChange={e => setSelectedAlbum(e.target.value)}
-              className="w-full px-4 py-2  rounded ">
-              <option value="">Select Album</option>
-              {albums.map(album => (
-                <option key={album.id} value={album.id}>
-                  {album.title}
-                </option>
-              ))}
-            </select>
-            <Button onClick={handleCreateAudio}>Create Audio</Button>
-          </form>
+          <FormAudio
+            onSubmit={handleCreateAudio}
+            audioTitle={audioTitle}
+            setAudioTitle={setAudioTitle}
+            audioFile={audioFile}
+            setAudioFile={setAudioFile}
+            albums={albums}
+            selectedAlbum={selectedAlbum}
+            setSelectedAlbum={setSelectedAlbum}
+            audioFirst
+          />
         </Modal>
       )}
       {openUpdateModal && (
         <Modal onClose={() => setOpenUpdateModal(false)}>
-          <form
-            onSubmit={e => {
-              handleUpdateAudio(e, updatedAudio);
-            }}
-            className="flex flex-col items-center p-4 space-y-4">
-            <input
-              type="text"
-              placeholder="Title"
-              value={audioTitle}
-              onChange={e => setAudioTitle(e.target.value)}
-              className="w-full px-4 py-2 rounded"
-            />
-            <label className="flex items-center justify-center w-full p-4 bg-gray-100 rounded cursor-pointer">
-              <span className="text-base text-gray-600">
-                {audioFile ? audioFile.name : 'Upload audio file'}
-              </span>
-              <input
-                type="file"
-                accept="audio/*"
-                onChange={e => setAudioFile(e.target.files[0])}
-                className="hidden"
-              />
-            </label>
-            <Button type="submit">Update Audio</Button>
-          </form>
+          <FormAudio
+            onSubmit={e => handleUpdateAudio(e, updatedAudio)}
+            audioTitle={audioTitle}
+            setAudioTitle={setAudioTitle}
+            audioFile={audioFile}
+            setAudioFile={setAudioFile}
+            albums={albums}
+            isUpdate
+          />
         </Modal>
       )}
     </div>

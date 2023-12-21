@@ -3,6 +3,8 @@ import {useState, useRef, useEffect} from 'react';
 import Loader from '../Loader';
 import Link from 'next/link';
 import index from '../TitleButton';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const SearchBar = () => {
   const [input, setInput] = useState('');
@@ -15,7 +17,7 @@ const SearchBar = () => {
       setLoading(true);
       clearTimeout(callRef.current);
       callRef.current = setTimeout(() => {
-        fetch('http://localhost:3000/api/search', {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/search`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -23,11 +25,9 @@ const SearchBar = () => {
           body: JSON.stringify({keyword: input}),
         })
           .then(response => response.json())
+
           .then(resultData => {
-            console.log(resultData, 'resultdata');
-            const {artists, albums, audios} = resultData;
-            const searchData = [...artists, ...albums, ...audios];
-            setData(searchData);
+            setData(resultData);
           })
           .catch(error => {
             console.error('Error fetching data:', error);
@@ -73,37 +73,52 @@ const SearchBar = () => {
         {data.length === 0 && input.length > 0 ? (
           <div className="text-third text-center">Nothing found</div>
         ) : (
-          data.map((item, index) => (
-            <div
-              key={index}
-              className="hover:bg-second p-2 text-[12px]  flex flex-col">
-              {item.name && (
-                <Link
-                  href={`/artists/${item.id}`}
-                  onClick={handleLinkClick}
-                  className="w-full">
-                  <span className="text-second group-hover:text-main">
-                    ar -
-                  </span>
-                  {item.name}
-                </Link>
-              )}
-              {item.cover && (
-                <Link href={`/albums/${item.id}`} onClick={handleLinkClick}>
-                  <span className="text-second">al -</span>
-                  {item.title}
-                </Link>
-              )}
-              {item.file && (
-                <Link
-                  href={`/albums/${item.albumId}`}
-                  onClick={handleLinkClick}>
-                  <span className="text-second">au -</span>
-                  {item.title}
-                </Link>
-              )}
-            </div>
-          ))
+          <div>
+            {data.artists &&
+              data.artists.map((item, index) => (
+                <div
+                  key={index}
+                  className="hover:bg-second p-2 text-[12px]  flex flex-col">
+                  <Link
+                    href={`/artists/${item.id}`}
+                    onClick={handleLinkClick}
+                    className="w-full">
+                    <span className="text-white">ar - </span>
+                    {item.name}
+                  </Link>
+                </div>
+              ))}
+
+            {data.albums &&
+              data.albums.map((item, index) => (
+                <div
+                  key={index}
+                  className="hover:bg-second p-2 text-[12px]  flex flex-col">
+                  <Link
+                    href={`/albums/${item.id}`}
+                    onClick={handleLinkClick}
+                    className="w-full">
+                    <span className="text-white">al - </span>
+                    {item.title}
+                  </Link>
+                </div>
+              ))}
+
+            {data.audios &&
+              data.audios.map((item, index) => (
+                <div
+                  key={index}
+                  className="hover:bg-second p-2 text-[12px]  flex flex-col">
+                  <Link
+                    href={`/albums/${item.albumId}`}
+                    onClick={handleLinkClick}
+                    className="w-full">
+                    <span className="text-white">au - </span>
+                    {item.title}
+                  </Link>
+                </div>
+              ))}
+          </div>
         )}
       </div>
     </div>

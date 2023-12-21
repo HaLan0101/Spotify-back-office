@@ -1,27 +1,40 @@
 'use client';
 import {useState, useEffect, useCallback} from 'react';
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
+import Image from 'next/image';
+import Link from 'next/link';
 import {useParams} from 'next/navigation';
-import Modal from '@/app/components/Modal';
 import {
   getAlbum,
   createAudioAlbum,
   deleteAudioAlbum,
   updateAudioAlbum,
+  updateAlbum,
 } from '@/app/api';
 import TitleButton from '@/app/components/TitleButton';
+import Update from '@/../../public/icons/update.svg';
 import Loader from '@/app/components/Loader';
 import {toast} from 'react-toastify';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Button from '@/app/components/Button';
 import ItemBar from '@/app/components/ItemBar';
-import Link from 'next/link';
+import {types} from '../../../../../public/typeList';
+import Modal from '@/app/components/Modal';
+import FormAlbum from '@/app/components/FormAlbum';
+import FormAudio from '@/app/components/FormAudio';
 
 const AlbumPage = () => {
+  //album
   const [album, setAlbum] = useState();
   const {id} = useParams();
-  const [openModal, setOpenModal] = useState(false);
+  const [albumTitle, setAlbumTitle] = useState();
+  const [albumCover, setAlbumCover] = useState();
+  const [selectedType, setSelectedType] = useState();
+  const [updateAlbumModal, setUpdateAlbumModal] = useState({
+    isOpen: false,
+    id: null,
+  });
+  //audio
   const [audioTitle, setAudioTitle] = useState('');
   const [audioFile, setAudioFile] = useState(null);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
@@ -29,6 +42,7 @@ const AlbumPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  //album
   useEffect(() => {
     setLoading(true);
     const fetchAlbum = id => {
@@ -45,6 +59,38 @@ const AlbumPage = () => {
     };
     fetchAlbum(id);
   }, [id]);
+
+  const handleUpdateAlbum = (e, id) => {
+    setLoading(true);
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('title', albumTitle);
+    formData.append('imageFile', albumCover);
+    formData.append('type', selectedType);
+    updateAlbum(id, formData)
+      .then(data => {
+        setAlbum(data);
+        setUpdateAlbumModal(false);
+        toast.success('Album updated successfully');
+      })
+      .catch(error => {
+        console.error('Error creating album:', error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const updateAlbumMod = useCallback(album => {
+    setUpdateAlbumModal({
+      isOpen: true,
+      id: album.id,
+    });
+    setAlbumTitle(album.title);
+    setSelectedType(album.type);
+  }, []);
+
+  //audio
 
   const handleCreate = e => {
     e.preventDefault();
@@ -96,6 +142,7 @@ const AlbumPage = () => {
   const update = audio => {
     setOpenUpdateModal(true);
     setUpdatedAudio(audio.id);
+    setAudioTitle(audio.title);
   };
 
   const handleDelete = useCallback(audioId => {
@@ -134,7 +181,10 @@ const AlbumPage = () => {
       audios: reorderedAudios,
     }));
   };
-
+  const handleCoverChange = useCallback(e => {
+    const file = e.target.files[0];
+    setAlbumCover(file);
+  }, []);
   if (loading) return <Loader />;
 
   return (
@@ -143,13 +193,24 @@ const AlbumPage = () => {
       <div>
         {album && album.cover && (
           <div className="w-full h-[300px] p-[12px] flex  items-center">
-            <img
-              className="h-full object-cover"
+            <Image
+              width={300}
+              height={300}
+              objectFit="cover"
               src={album.cover}
               alt={album.title}
             />
             <div className="text-second ml-[20px]">
-              <p className="text-[22px] font-bold"> Title</p>
+              <p className="text-[22px] font-bold flex items-center">
+                {' '}
+                Title{' '}
+                <button
+                  onClick={() => updateAlbumMod(album)}
+                  className="ml-2 w-[30px] h-[30px]">
+                  <img src={Update.src} className="w-[30px] h-[30px]" />
+                </button>
+              </p>
+
               <p className="text-[40px] text-white">{album.title}</p>
               <p className=" w-fit mt-[15px] text-[17px] font-semibold uppercase text-second">
                 Genre · <span className="text-white ">{album?.type}</span>
@@ -201,61 +262,48 @@ const AlbumPage = () => {
         </div>
       </div>
       {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <form
+        <Modal
+          onClose={() => {
+            setIsModalOpen(false);
+            setAudioTitle('');
+          }}>
+          <FormAudio
             onSubmit={handleCreate}
-            className="flex flex-col items-center p-4 space-y-4">
-            <label className="text-white w-full">
-              Title:
-              <input
-                type="text"
-                value={audioTitle}
-                onChange={e => setAudioTitle(e.target.value)}
-                className="w-full text-black px-4 py-2 border-2 border-gray-300 rounded focus:outline-none focus:border-second"
-              />
-            </label>
-            <label className="flex items-center justify-center w-full p-4 bg-gray-100  rounded cursor-pointer">
-              <span className="text-base text-gray-600">
-                {audioFile ? audioFile.name : 'Choose Audio File'}
-              </span>
-              <input
-                type="file"
-                accept="audio/*"
-                onChange={e => setAudioFile(e.target.files[0])}
-                className="hidden"
-              />
-            </label>
-            <Button type="submit">Create</Button>
-          </form>
+            audioTitle={audioTitle}
+            setAudioTitle={setAudioTitle}
+            audioFile={audioFile}
+            setAudioFile={setAudioFile}
+          />
         </Modal>
       )}
       {openUpdateModal && (
-        <Modal onClose={() => setOpenUpdateModal(false)}>
-          <form
-            onSubmit={e => {
-              handleUpdateAudio(e, updatedAudio);
-            }}
-            className="flex flex-col items-center p-4 space-y-4">
-            <input
-              type="text"
-              placeholder="Title"
-              value={audioTitle}
-              onChange={e => setAudioTitle(e.target.value)}
-              className="w-full px-4 py-2 rounded"
-            />
-            <label className="flex items-center justify-center w-full p-4 bg-gray-100 rounded cursor-pointer">
-              <span className="text-base text-gray-600">
-                {audioFile ? audioFile.name : 'Upload audio file'}
-              </span>
-              <input
-                type="file"
-                accept="audio/*"
-                onChange={e => setAudioFile(e.target.files[0])}
-                className="hidden"
-              />
-            </label>
-            <Button type="submit">Update Audio</Button>
-          </form>
+        <Modal
+          onClose={() => {
+            setOpenUpdateModal(false);
+            setAudioTitle('');
+          }}>
+          <FormAudio
+            onSubmit={e => handleUpdateAudio(e, updatedAudio)}
+            audioTitle={audioTitle}
+            setAudioTitle={setAudioTitle}
+            audioFile={audioFile}
+            setAudioFile={setAudioFile}
+            isUpdate
+          />
+        </Modal>
+      )}
+      {updateAlbumModal.isOpen && (
+        <Modal onClose={() => setUpdateAlbumModal({isOpen: false, id: null})}>
+          <FormAlbum
+            onSubmit={e => handleUpdateAlbum(e, updateAlbumModal.id)}
+            isUpdate
+            title={albumTitle}
+            setTitle={setAlbumTitle}
+            cover={albumCover}
+            handleCoverChange={handleCoverChange}
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
+          />
         </Modal>
       )}
     </div>

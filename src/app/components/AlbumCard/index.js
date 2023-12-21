@@ -1,15 +1,17 @@
 import Delete from '@/../../public/icons/delete.svg';
 import Update from '@/../../public/icons/update.svg';
 import Link from 'next/link';
+import Image from 'next/image';
 const AlbumCard = ({album, onDelete, onUpdate}) => {
   return (
     <div className="rounded-[7px] shadow-md bg-main w-[200px] h-[250px] relative mb-7">
       <Link href={`/albums/${album.id}`}>
-        <div className="w-full h-[73%] p-3 overflow-hidden">
-          <img
+        <div className="w-full h-[71%] p-3 mb-1  relative">
+          <Image
             src={album.cover}
             alt={album.title}
-            className="object-cover w-full h-full rounded-[7px] transition-transform transform hover:scale-105"
+            layout="fill"
+            objectFit="cover"
           />
         </div>
       </Link>
@@ -22,17 +24,26 @@ const AlbumCard = ({album, onDelete, onUpdate}) => {
             {album.type} · Genre
           </p>
         </div>
-
         <div className="absolute bottom-1 right-2 flex  items-center ">
           {onUpdate ? (
             <button
               className="w-[20px] mr-2 active:scale-75"
               onClick={onUpdate}>
-              <img src={Update.src} />
+              <Image
+                width={Update.width}
+                height={Update.height}
+                src={Update.src}
+                alt="update icon"
+              />
             </button>
           ) : null}
           <button className="w-[15px] active:scale-75" onClick={onDelete}>
-            <img src={Delete.src} />
+            <Image
+              width={Delete.width}
+              height={Delete.height}
+              src={Delete.src}
+              alt="delete icon"
+            />
           </button>
         </div>
       </div>

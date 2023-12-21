@@ -5,6 +5,7 @@ import {deleteArtist, getArtists, updateArtist, createArtist} from '@/app/api';
 import Button from '@/app/components/Button';
 import ArtistBar from '@/app/components/ItemBar';
 import TitleButton from '@/app/components/TitleButton';
+import Image from 'next/image';
 import artistsbg from '@/../../public/icons/artistsbg.jpg';
 import Modal from '@/app/components/Modal';
 import Loader from '@/app/components/Loader';
@@ -67,6 +68,12 @@ export default function Page() {
 
   const handleDeleteArtist = useCallback(
     id => {
+      const isConfirmed = window.confirm(
+        'Are you sure you want to delete this artist',
+      );
+      if (!isConfirmed) {
+        return;
+      }
       deleteArtist(id)
         .then(data => {
           setArtists(data);
@@ -92,8 +99,8 @@ export default function Page() {
     <div className="w-full">
       <ToastContainer position="bottom-right" />
       <div>
-        <div className="flex justify-center h-[300px]">
-          <img src={artistsbg.src} className="h-full " />
+        <div className="flex justify-center relative h-[300px]">
+          <Image fill objectFit="contain" src={artistsbg.src} alt="artist" />
         </div>
         <div className="p-[30px]">
           <TitleButton
