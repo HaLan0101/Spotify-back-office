@@ -7,6 +7,7 @@ const index = ({
   title,
   setTitle,
   cover,
+  artists,
   handleCoverChange,
   selectedType,
   setSelectedType,
@@ -78,11 +79,12 @@ const index = ({
             onChange={e => setSelectedArtist(e.target.value)}
             className="w-full px-4 py-2  rounded ">
             <option value="">Select Artist</option>
-            {artists.map(artist => (
-              <option key={artist.id} value={artist.id}>
-                {artist.name}
-              </option>
-            ))}
+            {artists &&
+              artists.map(artist => (
+                <option key={artist.id} value={artist.id}>
+                  {artist.name}
+                </option>
+              ))}
           </select>
           <select
             value={selectedType}

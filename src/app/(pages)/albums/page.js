@@ -191,6 +191,8 @@ export default function Page() {
             title={title}
             setTitle={setTitle}
             cover={cover}
+            artists={artists}
+            types={types}
             handleCoverChange={handleCoverChange}
             selectedType={selectedType}
             setSelectedType={setSelectedType}
