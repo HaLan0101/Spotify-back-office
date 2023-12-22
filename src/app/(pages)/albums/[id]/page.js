@@ -299,6 +299,7 @@ const AlbumPage = () => {
             isUpdate
             title={albumTitle}
             setTitle={setAlbumTitle}
+            types={types}
             cover={albumCover}
             handleCoverChange={handleCoverChange}
             selectedType={selectedType}
