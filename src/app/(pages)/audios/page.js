@@ -28,7 +28,7 @@ export default function Sounds() {
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [updatedAudio, setUpdatedAudio] = useState();
   const [albums, setAlbums] = useState();
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(2);
   const [totalPages, setTotalPages] = useState();
   const [loading, setLoading] = useState(false);
 

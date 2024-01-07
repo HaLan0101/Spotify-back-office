@@ -26,7 +26,7 @@ const index = ({
             type="text"
             placeholder="Title"
             value={title}
-            className="w-full px-4 py-2 border-2 border-gray-300 rounded focus:outline-none focus:border-second"
+            className="w-full text-black px-4 py-2 border-2 border-gray-300 rounded focus:outline-none focus:border-second"
           />
           <label className="flex items-center justify-center w-full p-4 bg-gray-100 border-2  rounded cursor-pointer">
             <span className="text-base text-gray-600">
@@ -42,7 +42,7 @@ const index = ({
           <select
             value={selectedType}
             onChange={e => setSelectedType(e.target.value)}
-            className="w-full px-4 py-2 rounded">
+            className="w-full px-4 py-2 rounded text-black">
             <option value="">Select album genre</option>
             {types &&
               types.map(type => (
@@ -61,7 +61,7 @@ const index = ({
             onChange={e => setTitle(e.target.value)}
             type="text"
             placeholder="Title"
-            className="w-full px-4 py-2  rounded"
+            className="w-full px-4 py-2  rounded text-black"
           />
           <label className="flex items-center justify-center w-full p-4 bg-gray-100  rounded cursor-pointer">
             <span className="text-base text-gray-600">
@@ -77,7 +77,7 @@ const index = ({
           <select
             value={selectedArtist}
             onChange={e => setSelectedArtist(e.target.value)}
-            className="w-full px-4 py-2  rounded ">
+            className="w-full px-4 py-2  rounded text-black">
             <option value="">Select Artist</option>
             {artists &&
               artists.map(artist => (
@@ -89,7 +89,7 @@ const index = ({
           <select
             value={selectedType}
             onChange={e => setSelectedType(e.target.value)}
-            className="w-full px-4 py-2 rounded">
+            className="w-full px-4 py-2 rounded text-black">
             <option value="">Select Music Type</option>
             {types &&
               types.map(type => (

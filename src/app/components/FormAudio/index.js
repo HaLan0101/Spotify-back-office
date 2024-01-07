@@ -23,7 +23,7 @@ const AudioForm = ({
             placeholder="Title"
             value={audioTitle}
             onChange={e => setAudioTitle(e.target.value)}
-            className="w-full px-4 py-2 rounded"
+            className="w-full px-4 py-2 rounded text-black"
             required
           />
           <label className="flex items-center justify-center w-full p-4 bg-gray-100 rounded cursor-pointer">
@@ -41,7 +41,7 @@ const AudioForm = ({
           <select
             value={selectedAlbum}
             onChange={e => setSelectedAlbum(e.target.value)}
-            className="w-full px-4 py-2  rounded "
+            className="w-full px-4 py-2  rounded text-black"
             required>
             <option value="">Select Album</option>
             {albums.map(album => (
@@ -61,7 +61,7 @@ const AudioForm = ({
             placeholder="Title"
             value={audioTitle}
             onChange={e => setAudioTitle(e.target.value)}
-            className="w-full px-4 py-2 rounded"
+            className="w-full px-4 py-2 rounded text-black"
             required
           />
           <label className="flex items-center justify-center w-full p-4 bg-gray-100 rounded cursor-pointer">
