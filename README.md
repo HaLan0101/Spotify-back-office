@@ -23,3 +23,17 @@ SOUHAITEZ-VOUS UNE ANALYSE ET DES RETOURS CONCRETS SUR VOTRE CODE ?
 - Oui
 
 Description :
+- NextJs latest version
+- ES6 avec Babel
+- React
+- Eslint / prettier
+- CRUD Artist
+- CRUD Audio
+- CRUD Album
+- Notification system using react-toastify
+- Statistics on nombre de morceau sur la plateforme, nombre d’album,nombre d’écout
+- React useMemo, useCallback, lazy pour la performance
+- Pagination pour la performance et pour la praticité
+- Tailwind pour styliser
+- Drag & drop using react-beautiful-dnd
+- Loader 
