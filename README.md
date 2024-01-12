@@ -35,5 +35,6 @@ Description :
 - React useMemo, useCallback, lazy pour la performance
 - Pagination pour la performance et pour la praticité
 - Tailwind pour styliser
+- Search bar pour album, artist, audio
 - Drag & drop using react-beautiful-dnd
 - Loader 
